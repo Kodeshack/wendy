@@ -151,3 +151,26 @@ func (f *tmplFile) WriteTo(w io.Writer) (int64, error) {
 
 	return 0, t.Execute(w, f.data)
 }
+
+type Template interface {
+	Execute(w io.Writer, data any) error
+}
+
+func FileFromTemplate(name string, template Template, data any) File {
+	return &fileFromTmpl{name: name, template: template, data: data}
+}
+
+type fileFromTmpl struct {
+	name     string
+	template Template
+	data     any
+}
+
+func (f *fileFromTmpl) Name() string {
+	return f.name
+}
+
+// WriteTo implements [io.WriterTo]
+func (f *fileFromTmpl) WriteTo(w io.Writer) (int64, error) {
+	return 0, f.template.Execute(w, f.data)
+}

@@ -1,8 +1,14 @@
 # Changelog
 
-<a name="unreleased"></a>
-## [Unreleased]
 
+<a name="v0.2.3"></a>
+## [v0.2.3] - 2023-05-09
+### Fixes
+- Fix release task to generate changelog after creating tag
+
+
+<a name="v0.2.2"></a>
+## [v0.2.2] - 2023-05-09
 ### Fixes
 - Fix changelog template to not show unrelease header if there are none
 
@@ -27,6 +33,8 @@
 - Add FileFromTemplate
 
 
-[Unreleased]: https://github.com/Kodeshack/wendy/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/Kodeshack/wendy/compare/v0.2.3...HEAD
+[v0.2.3]: https://github.com/Kodeshack/wendy/compare/v0.2.2...v0.2.3
+[v0.2.2]: https://github.com/Kodeshack/wendy/compare/v0.2.1...v0.2.2
 [v0.2.1]: https://github.com/Kodeshack/wendy/compare/v0.2.0...v0.2.1
 [v0.2.0]: https://github.com/Kodeshack/wendy/compare/v0.1.1...v0.2.0

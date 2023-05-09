@@ -12,9 +12,17 @@ import (
 type FSGenerator struct {
 	RootDir            string
 	ErrorOnExistingDir bool
+	CleanDir           bool
 }
 
 func (g *FSGenerator) Generate(files ...File) error {
+	if g.CleanDir {
+		err := cleanDir(g.RootDir)
+		if err != nil {
+			return err
+		}
+	}
+
 	rootDir, err := filepath.Abs(g.RootDir)
 	if err != nil {
 		return err
@@ -177,4 +185,20 @@ func (f *fileFromTmpl) Name() string {
 // WriteTo implements [io.WriterTo]
 func (f *fileFromTmpl) WriteTo(w io.Writer) (int64, error) {
 	return 0, f.template.Execute(w, f.data)
+}
+
+func cleanDir(dir string) error {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return err
+	}
+
+	for _, e := range entries {
+		err := os.RemoveAll(path.Join(dir, e.Name()))
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

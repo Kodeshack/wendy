@@ -11,9 +11,7 @@ import (
 func TestFSGenerator_Generate(t *testing.T) {
 	tmpdir := t.TempDir()
 
-	g := &FSGenerator{
-		RootDir: tmpdir,
-	}
+	g := &FSGenerator{RootDir: tmpdir}
 
 	err := g.Generate(
 		PlainFile("README.md", "This is the package"),
@@ -68,4 +66,21 @@ func TestFSGenerator_Generate(t *testing.T) {
 	pkgCliRunGo, err := os.ReadFile(path.Join(tmpdir, "pkg", "cli", "run.go"))
 	assert.NoError(t, err)
 	assert.Equal(t, "package cli...run...", string(pkgCliRunGo))
+}
+
+func TestFSGenerator_Generate_ErrorOnExistingDir(t *testing.T) {
+	tmpdir := t.TempDir()
+
+	g := &FSGenerator{RootDir: tmpdir}
+
+	err := g.Generate(Dir("will_exist"))
+	assert.NoError(t, err)
+
+	err = g.Generate(Dir("will_exist"))
+	assert.NoError(t, err)
+
+	g = &FSGenerator{RootDir: tmpdir, ErrorOnExistingDir: true}
+
+	err = g.Generate(Dir("will_exist"))
+	assert.Error(t, err)
 }

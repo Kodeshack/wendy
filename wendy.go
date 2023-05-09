@@ -1,6 +1,7 @@
 package wendy
 
 import (
+	"errors"
 	"io"
 	"os"
 	"path"
@@ -9,7 +10,8 @@ import (
 )
 
 type FSGenerator struct {
-	RootDir string
+	RootDir            string
+	ErrorOnExistingDir bool
 }
 
 func (g *FSGenerator) Generate(files ...File) error {
@@ -45,7 +47,9 @@ func (g *FSGenerator) generateDir(parentDir string, dir Directory) error {
 
 	err := os.Mkdir(dirpath, 0755)
 	if err != nil {
-		return err
+		if !errors.Is(err, os.ErrExist) || g.ErrorOnExistingDir {
+			return err
+		}
 	}
 
 	entries, err := dir.Entries()

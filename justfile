@@ -17,10 +17,11 @@ clean:
 changelog:
 	git-chglog -o CHANGELOG.md
 
-release tag: changelog
+release tag:
+    git tag {{tag}}
+    git just changelog
     git add CHANGELOG.md
     git commit -m "Generated changelog for {{tag}}"
-    git tag {{tag}}
     git push
     git push origin {{tag}}
 

@@ -14,3 +14,13 @@ fmt:
 clean:
 	go clean -cache
 
+changelog:
+	git-chglog -o CHANGELOG.md
+
+release tag: changelog
+    git add CHANGELOG.md
+    git commit -m "Generated changelog for {{tag}}"
+    git tag {{tag}}
+    git push
+    git push origin {{tag}}
+

@@ -19,7 +19,7 @@ changelog:
 
 release tag:
     git tag {{tag}}
-    git just changelog
+    just changelog
     git add CHANGELOG.md
     git commit -m "Generated changelog for {{tag}}"
     git push

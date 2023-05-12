@@ -1,6 +1,20 @@
 # Changelog
 
 
+<a name="v0.3.0"></a>
+## [v0.3.0] - 2023-05-12
+### Features
+- Add test-watch task using gotestsum
+- Add license info to README
+- Add bades to README
+
+### Fixes
+- Fix not ignoring non existing dir when CleanDir is set to true
+
+### Refactoring
+- Refactor RootDir to OutputDir to be more clear
+
+
 <a name="v0.2.4"></a>
 ## [v0.2.4] - 2023-05-12
 ### Features
@@ -44,7 +58,8 @@
 - Add FileFromTemplate
 
 
-[Unreleased]: https://github.com/Kodeshack/wendy/compare/v0.2.4...HEAD
+[Unreleased]: https://github.com/Kodeshack/wendy/compare/v0.3.0...HEAD
+[v0.3.0]: https://github.com/Kodeshack/wendy/compare/v0.2.4...v0.3.0
 [v0.2.4]: https://github.com/Kodeshack/wendy/compare/v0.2.3...v0.2.4
 [v0.2.3]: https://github.com/Kodeshack/wendy/compare/v0.2.2...v0.2.3
 [v0.2.2]: https://github.com/Kodeshack/wendy/compare/v0.2.1...v0.2.2

@@ -4,6 +4,9 @@ _default:
 test +flags="-failfast":
 	go test {{flags}} ./...
 
+test-watch *flags:
+	gotestsum --watch -- {{flags}}
+
 lint:
 	staticcheck ./...
 	golangci-lint run ./...

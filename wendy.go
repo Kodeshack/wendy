@@ -190,6 +190,10 @@ func (f *fileFromTmpl) WriteTo(w io.Writer) (int64, error) {
 func cleanDir(dir string) error {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
+		if errors.Is(err, os.ErrExist) {
+			return nil
+		}
+
 		return err
 	}
 

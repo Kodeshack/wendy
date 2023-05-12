@@ -1,6 +1,17 @@
 # Changelog
 
 
+<a name="v0.2.4"></a>
+## [v0.2.4] - 2023-05-12
+### Features
+- Add dependabot config
+- Add missing license file
+
+### Fixes
+- Fix error swallowing
+- Fix release task
+
+
 <a name="v0.2.3"></a>
 ## [v0.2.3] - 2023-05-09
 ### Fixes
@@ -33,7 +44,8 @@
 - Add FileFromTemplate
 
 
-[Unreleased]: https://github.com/Kodeshack/wendy/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/Kodeshack/wendy/compare/v0.2.4...HEAD
+[v0.2.4]: https://github.com/Kodeshack/wendy/compare/v0.2.3...v0.2.4
 [v0.2.3]: https://github.com/Kodeshack/wendy/compare/v0.2.2...v0.2.3
 [v0.2.2]: https://github.com/Kodeshack/wendy/compare/v0.2.1...v0.2.2
 [v0.2.1]: https://github.com/Kodeshack/wendy/compare/v0.2.0...v0.2.1

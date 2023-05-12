@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	"testing"
+	"text/template"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -109,4 +110,46 @@ func TestFSGenerator_Generate_CleanDir(t *testing.T) {
 	assert.Len(t, entries, 1)
 	assert.Equal(t, "different_dir", entries[0].Name())
 	assert.True(t, entries[0].IsDir())
+}
+
+func TestFSGenerator_Generate_FileFromTemplate(t *testing.T) {
+	tmpdir := t.TempDir()
+
+	g := &FSGenerator{ //nolint:varnamelen // This is just a test
+		RootDir:            tmpdir,
+		CleanDir:           true,
+		ErrorOnExistingDir: true,
+	}
+
+	data := map[string]any{
+		"foo": "bar",
+		"baz": "bat",
+	}
+
+	tmplt, err := template.New("").Parse(`{
+		"foo": "{{ .foo }}",
+		"baz": "{{ .baz }}",
+}`)
+	assert.NoError(t, err)
+
+	err = g.Generate(
+		FileFromTemplate("test.json", tmplt, data),
+	)
+	assert.NoError(t, err)
+
+	expected := `{
+		"foo": "bar",
+		"baz": "bat",
+}`
+
+	testJsonContents, err := os.ReadFile(path.Join(tmpdir, "test.json"))
+	assert.NoError(t, err)
+	assert.Equal(t, expected, string(testJsonContents))
+
+	data2 := struct{ Foo string }{"Bar"}
+
+	err = g.Generate(
+		FileFromTemplate("test2.json", tmplt, data2),
+	)
+	assert.Error(t, err)
 }

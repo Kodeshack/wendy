@@ -80,7 +80,7 @@ func (g *FSGenerator) generateRealFile(filepath string, wt io.WriterTo) (err err
 	if err != nil {
 		return err
 	}
-	defer func() { err = fh.Close() }()
+	defer func() { err = errors.Join(err, fh.Close()) }()
 
 	_, err = wt.WriteTo(fh)
 

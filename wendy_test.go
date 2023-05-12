@@ -12,7 +12,7 @@ import (
 func TestFSGenerator_Generate(t *testing.T) {
 	tmpdir := t.TempDir()
 
-	g := &FSGenerator{RootDir: tmpdir}
+	g := &FSGenerator{OutputDir: tmpdir}
 
 	err := g.Generate(
 		PlainFile("README.md", "This is the package"),
@@ -72,7 +72,7 @@ func TestFSGenerator_Generate(t *testing.T) {
 func TestFSGenerator_Generate_ErrorOnExistingDir(t *testing.T) {
 	tmpdir := t.TempDir()
 
-	g := &FSGenerator{RootDir: tmpdir}
+	g := &FSGenerator{OutputDir: tmpdir}
 
 	err := g.Generate(Dir("will_exist"))
 	assert.NoError(t, err)
@@ -80,7 +80,7 @@ func TestFSGenerator_Generate_ErrorOnExistingDir(t *testing.T) {
 	err = g.Generate(Dir("will_exist"))
 	assert.NoError(t, err)
 
-	g = &FSGenerator{RootDir: tmpdir, ErrorOnExistingDir: true}
+	g = &FSGenerator{OutputDir: tmpdir, ErrorOnExistingDir: true}
 
 	err = g.Generate(Dir("will_exist"))
 	assert.Error(t, err)
@@ -90,7 +90,7 @@ func TestFSGenerator_Generate_CleanDir(t *testing.T) {
 	tmpdir := t.TempDir()
 
 	g := &FSGenerator{
-		RootDir:            tmpdir,
+		OutputDir:          tmpdir,
 		CleanDir:           true,
 		ErrorOnExistingDir: true,
 	}
@@ -112,11 +112,23 @@ func TestFSGenerator_Generate_CleanDir(t *testing.T) {
 	assert.True(t, entries[0].IsDir())
 }
 
+func TestFSGenerator_Generate_CleanDir_DirNotExist(t *testing.T) {
+	tmpdir := t.TempDir()
+
+	g := &FSGenerator{
+		OutputDir: path.Join(tmpdir, "non_existent"),
+		CleanDir:  true,
+	}
+
+	err := g.Generate(PlainFile("test.txt", "contents"))
+	assert.NoError(t, err)
+}
+
 func TestFSGenerator_Generate_FileFromTemplate(t *testing.T) {
 	tmpdir := t.TempDir()
 
 	g := &FSGenerator{ //nolint:varnamelen // This is just a test
-		RootDir:            tmpdir,
+		OutputDir:          tmpdir,
 		CleanDir:           true,
 		ErrorOnExistingDir: true,
 	}
@@ -152,4 +164,26 @@ func TestFSGenerator_Generate_FileFromTemplate(t *testing.T) {
 		FileFromTemplate("test2.json", tmplt, data2),
 	)
 	assert.Error(t, err)
+}
+
+func TestFSGenerator_Generate_NoCreateOutputDir(t *testing.T) {
+	tmpdir := t.TempDir()
+
+	g := &FSGenerator{
+		OutputDir:         path.Join(tmpdir, "will_not_create"),
+		NoCreateOutputDir: true,
+	}
+
+	err := g.Generate(PlainFile("test.txt", "contents"))
+	assert.Error(t, err)
+
+	err = os.Mkdir(g.OutputDir, 0755)
+	assert.NoError(t, err)
+
+	err = g.Generate(PlainFile("test.txt", "contents"))
+	assert.NoError(t, err)
+
+	actual, err := os.ReadFile(path.Join(tmpdir, "will_not_create", "test.txt"))
+	assert.NoError(t, err)
+	assert.Equal(t, "contents", string(actual))
 }

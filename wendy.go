@@ -10,22 +10,32 @@ import (
 )
 
 type FSGenerator struct {
-	RootDir            string
+	OutputDir          string
 	ErrorOnExistingDir bool
 	CleanDir           bool
+	NoCreateOutputDir  bool
 }
 
 func (g *FSGenerator) Generate(files ...File) error {
 	if g.CleanDir {
-		err := cleanDir(g.RootDir)
+		err := cleanDir(g.OutputDir)
 		if err != nil {
 			return err
 		}
 	}
 
-	rootDir, err := filepath.Abs(g.RootDir)
+	rootDir, err := filepath.Abs(g.OutputDir)
 	if err != nil {
 		return err
+	}
+
+	if !g.NoCreateOutputDir {
+		err := os.Mkdir(rootDir, 0755)
+		if err != nil {
+			if !errors.Is(err, os.ErrExist) {
+				return err
+			}
+		}
 	}
 
 	for _, f := range files {
@@ -190,7 +200,7 @@ func (f *fileFromTmpl) WriteTo(w io.Writer) (int64, error) {
 func cleanDir(dir string) error {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
-		if errors.Is(err, os.ErrExist) {
+		if errors.Is(err, os.ErrNotExist) {
 			return nil
 		}
 

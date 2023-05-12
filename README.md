@@ -31,3 +31,7 @@ err := g.Generate(
 	),
 )
 ````
+
+## License
+
+[MIT](https://github.com/Kodeshack/wendy/blob/main/LICENSE)

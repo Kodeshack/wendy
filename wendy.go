@@ -2,6 +2,7 @@ package wendy
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path"
@@ -10,10 +11,11 @@ import (
 )
 
 type FSGenerator struct {
-	OutputDir          string
-	ErrorOnExistingDir bool
-	CleanDir           bool
-	NoCreateOutputDir  bool
+	OutputDir           string
+	ErrorOnExistingDir  bool
+	CleanDir            bool
+	NoCreateOutputDir   bool
+	ErrorOnExistingFile bool
 }
 
 func (g *FSGenerator) Generate(files ...File) error {
@@ -86,6 +88,19 @@ func (g *FSGenerator) generateDir(parentDir string, dir Directory) error {
 }
 
 func (g *FSGenerator) generateRealFile(filepath string, wt io.WriterTo) (err error) {
+	if g.ErrorOnExistingFile {
+		stat, statErr := os.Stat(filepath)
+		if statErr != nil {
+			if !errors.Is(statErr, os.ErrNotExist) {
+				return statErr
+			}
+		}
+
+		if stat != nil {
+			return fmt.Errorf("file already exits %s: %w", filepath, os.ErrExist)
+		}
+	}
+
 	fh, err := os.OpenFile(filepath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 	if err != nil {
 		return err

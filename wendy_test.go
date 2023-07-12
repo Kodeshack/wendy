@@ -86,6 +86,18 @@ func TestFSGenerator_Generate_ErrorOnExistingDir(t *testing.T) {
 	assert.Error(t, err)
 }
 
+func TestFSGenerator_Generate_ErrorOnExistingFile(t *testing.T) {
+	tmpdir := t.TempDir()
+
+	g := &FSGenerator{OutputDir: tmpdir, ErrorOnExistingFile: true}
+
+	err := g.Generate(Dir("will_exist", PlainFile("test", "contents")))
+	assert.NoError(t, err)
+
+	err = g.Generate(Dir("will_exist", PlainFile("test", "contents")))
+	assert.ErrorIs(t, err, os.ErrExist)
+}
+
 func TestFSGenerator_Generate_CleanDir(t *testing.T) {
 	tmpdir := t.TempDir()
 

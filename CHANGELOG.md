@@ -1,5 +1,16 @@
 # Changelog
 
+<a name="unreleased"></a>
+## [Unreleased]
+
+### Features
+- Add ErrorOnExistingFile option
+- Add go report card
+- Add codecove coverage report
+
+### Fixes
+- Fix release commit/tagging order
+
 
 <a name="v0.3.0"></a>
 ## [v0.3.0] - 2023-05-12

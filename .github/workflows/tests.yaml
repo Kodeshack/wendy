@@ -47,6 +47,10 @@ jobs:
     - name: "Lint"
       run: |
         just lint
+    - name: Add lint to step summary
+      if: ${{ failure() }}
+      run: |
+        just lint > $GITHUB_STEP_SUMMARY
 
   test:
     runs-on: ubuntu-latest

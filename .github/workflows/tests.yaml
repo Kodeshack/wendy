@@ -81,3 +81,7 @@ jobs:
       uses: codecov/codecov-action@v3
       with:
         files: coverage.txt
+
+    - name: Render coverage as text
+      run: |
+        go tool cover -func coverage.txt > $GITHUB_STEP_SUMMARY

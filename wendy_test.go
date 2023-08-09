@@ -1,6 +1,8 @@
 package wendy
 
 import (
+	"bytes"
+	"encoding/json"
 	"os"
 	"path"
 	"testing"
@@ -198,4 +200,89 @@ func TestFSGenerator_Generate_NoCreateOutputDir(t *testing.T) {
 	actual, err := os.ReadFile(path.Join(tmpdir, "will_not_create", "test.txt"))
 	assert.NoError(t, err)
 	assert.Equal(t, "contents", string(actual))
+}
+
+func TestFSGenerator_Generate_ModifyFile(t *testing.T) {
+	tmpdir := t.TempDir()
+
+	g := &FSGenerator{OutputDir: tmpdir} //nolint: varnamelen
+
+	err := g.Generate(
+		PlainFile("config.json", `{"foo": "bar"}`),
+		Dir(".config",
+			PlainFile("config.ini", `foo = bar`),
+		),
+	)
+	assert.NoError(t, err)
+
+	type config struct {
+		Foo string `json:"foo"`
+		Baz string `json:"baz"`
+	}
+
+	unmarshalINI := func(d []byte, target any) error {
+		c, ok := target.(*config)
+		if !ok {
+			panic("parseINI can only decode config")
+		}
+
+		lines := bytes.Split(d, []byte("\n"))
+		for _, l := range lines {
+			pairs := bytes.Split(l, []byte("="))
+			key := string(bytes.TrimSpace(pairs[0]))
+			value := bytes.TrimSpace(pairs[1])
+			if key == "foo" {
+				c.Foo = string(value)
+				continue
+			}
+
+			if key == "baz" {
+				c.Baz = string(value)
+				continue
+			}
+		}
+		return nil
+	}
+
+	marshalINI := func(c *config) ([]byte, error) {
+		var b bytes.Buffer
+
+		if c.Foo != "" {
+			b.WriteString("foo = ")
+			b.WriteString(c.Foo)
+			b.WriteString("\n")
+		}
+
+		if c.Baz != "" {
+			b.WriteString("baz = ")
+			b.WriteString(c.Baz)
+			b.WriteString("\n")
+		}
+
+		return b.Bytes(), nil
+	}
+
+	err = g.Generate(
+		ModifyFile("config.json", json.Unmarshal, func(c *config) ([]byte, error) {
+			c.Foo = "modified"
+			c.Baz = "added"
+			return json.Marshal(c)
+		}),
+		Dir(".config",
+			ModifyFile("config.ini", unmarshalINI, func(c *config) ([]byte, error) {
+				c.Foo = "modified"
+				c.Baz = "added"
+				return marshalINI(c)
+			}),
+		),
+	)
+	assert.NoError(t, err)
+
+	configJSON, err := os.ReadFile(path.Join(tmpdir, "config.json"))
+	assert.NoError(t, err)
+	assert.Equal(t, `{"foo":"modified","baz":"added"}`, string(configJSON))
+
+	configINI, err := os.ReadFile(path.Join(tmpdir, ".config", "config.ini"))
+	assert.NoError(t, err)
+	assert.Equal(t, "foo = modified\nbaz = added\n", string(configINI))
 }

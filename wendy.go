@@ -1,7 +1,6 @@
 package wendy
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -21,7 +20,7 @@ type FSGenerator struct {
 
 type genfile struct {
 	path     string
-	contents *bytes.Buffer
+	contents WriterToFile
 }
 
 type gendir struct {
@@ -109,13 +108,27 @@ func (g *FSGenerator) generateRealFile(file *genfile) error {
 		}
 	}
 
-	fh, err := os.OpenFile(file.path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+	tmpfile, err := os.CreateTemp("", path.Base(file.path))
 	if err != nil {
 		return err
 	}
-	defer func() { err = errors.Join(err, fh.Close()) }()
+	defer func() {
+		err = errors.Join(
+			err,
+			tmpfile.Close(),
+		)
 
-	_, err = file.contents.WriteTo(fh)
+		if err != nil {
+			err = errors.Join(err, os.Remove(tmpfile.Name()))
+		}
+	}()
+
+	_, err = file.contents.WriteToFile(file.path, tmpfile)
+	if err != nil {
+		return err
+	}
+
+	err = os.Rename(tmpfile.Name(), file.path)
 
 	return err
 }
@@ -132,13 +145,11 @@ func (g *FSGenerator) generate(ctx context.Context, parentDir string, file File)
 	}
 
 	if wt, ok := file.(WriterToFile); ok {
-		file, err := g.generateFile(ctx, path.Join(parentDir, file.Name()), wt)
-		return nil, []*genfile{file}, err
+		return nil, []*genfile{{path: path.Join(parentDir, file.Name()), contents: wt}}, nil
 	}
 
 	if wt, ok := file.(io.WriterTo); ok {
-		file, err := g.generateFile(ctx, path.Join(parentDir, file.Name()), &writerToAdapter{wt})
-		return nil, []*genfile{file}, err
+		return nil, []*genfile{{path: path.Join(parentDir, file.Name()), contents: &writerToAdapter{wt}}}, nil
 	}
 
 	return nil, nil, nil
@@ -172,23 +183,6 @@ func (g *FSGenerator) generateDir(ctx context.Context, parentDir string, dir Dir
 	}
 
 	return gendirs, genfiles, nil
-}
-
-func (g *FSGenerator) generateFile(ctx context.Context, filepath string, wt WriterToFile) (*genfile, error) {
-	select {
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	default:
-	}
-
-	f := &genfile{path: filepath, contents: bytes.NewBuffer(nil)}
-
-	_, err := wt.WriteToFile(filepath, f.contents)
-	if err != nil {
-		return nil, err
-	}
-
-	return f, nil
 }
 
 type File interface {

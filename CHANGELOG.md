@@ -4,6 +4,14 @@
 ## [Unreleased]
 
 ### Features
+- Add support for modifiying files
+- Add lint failure reporting to step summary
+- Add coverage report to step summary
+
+
+<a name="v0.4.0"></a>
+## [v0.4.0] - 2023-07-12
+### Features
 - Add ErrorOnExistingFile option
 - Add go report card
 - Add codecove coverage report
@@ -69,7 +77,8 @@
 - Add FileFromTemplate
 
 
-[Unreleased]: https://github.com/Kodeshack/wendy/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/Kodeshack/wendy/compare/v0.4.0...HEAD
+[v0.4.0]: https://github.com/Kodeshack/wendy/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/Kodeshack/wendy/compare/v0.2.4...v0.3.0
 [v0.2.4]: https://github.com/Kodeshack/wendy/compare/v0.2.3...v0.2.4
 [v0.2.3]: https://github.com/Kodeshack/wendy/compare/v0.2.2...v0.2.3

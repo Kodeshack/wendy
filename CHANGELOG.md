@@ -3,6 +3,12 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Features
+- Add atomicity to file writing
+
+
+<a name="v0.6.0"></a>
+## [v0.6.0] - 2023-08-09
 ### Refactoring
 - Refactor internals to create an in memory file system first
 
@@ -83,7 +89,8 @@
 - Add FileFromTemplate
 
 
-[Unreleased]: https://github.com/Kodeshack/wendy/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/Kodeshack/wendy/compare/v0.6.0...HEAD
+[v0.6.0]: https://github.com/Kodeshack/wendy/compare/v0.5.0...v0.6.0
 [v0.5.0]: https://github.com/Kodeshack/wendy/compare/v0.4.0...v0.5.0
 [v0.4.0]: https://github.com/Kodeshack/wendy/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/Kodeshack/wendy/compare/v0.2.4...v0.3.0

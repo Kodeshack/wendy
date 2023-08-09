@@ -7,6 +7,23 @@ import (
 	"text/template"
 )
 
+type File interface {
+	Name() string
+}
+
+type Directory interface {
+	File
+	Entries() ([]File, error)
+}
+
+type WriterToFile interface {
+	WriteToFile(filename string, w io.Writer) (n int64, err error)
+}
+
+type IsNewFile interface {
+	IsNewFile() bool
+}
+
 func Dir(name string, entries ...File) Directory {
 	return &dir{name: name, entries: entries}
 }
@@ -110,6 +127,10 @@ type modFile[E any] struct {
 
 func (f *modFile[E]) Name() string {
 	return f.name
+}
+
+func (f *modFile[E]) IsNewFile() bool {
+	return false
 }
 
 // WriteTo implements [WriterToFile]

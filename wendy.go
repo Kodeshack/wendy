@@ -19,8 +19,9 @@ type FSGenerator struct {
 }
 
 type genfile struct {
-	path     string
-	contents WriterToFile
+	path      string
+	contents  WriterToFile
+	isNewFile bool
 }
 
 type gendir struct {
@@ -95,7 +96,7 @@ func (g *FSGenerator) generateRealDir(dir string) error {
 }
 
 func (g *FSGenerator) generateRealFile(file *genfile) error {
-	if g.ErrorOnExistingFile {
+	if g.ErrorOnExistingFile && file.isNewFile {
 		stat, statErr := os.Stat(file.path)
 		if statErr != nil {
 			if !errors.Is(statErr, os.ErrNotExist) {
@@ -144,12 +145,17 @@ func (g *FSGenerator) generate(ctx context.Context, parentDir string, file File)
 		return g.generateDir(ctx, parentDir, dir)
 	}
 
+	isNewFile := true
+	if f, ok := file.(IsNewFile); ok {
+		isNewFile = f.IsNewFile()
+	}
+
 	if wt, ok := file.(WriterToFile); ok {
-		return nil, []*genfile{{path: path.Join(parentDir, file.Name()), contents: wt}}, nil
+		return nil, []*genfile{{path: path.Join(parentDir, file.Name()), contents: wt, isNewFile: isNewFile}}, nil
 	}
 
 	if wt, ok := file.(io.WriterTo); ok {
-		return nil, []*genfile{{path: path.Join(parentDir, file.Name()), contents: &writerToAdapter{wt}}}, nil
+		return nil, []*genfile{{path: path.Join(parentDir, file.Name()), contents: &writerToAdapter{wt}, isNewFile: isNewFile}}, nil
 	}
 
 	return nil, nil, nil
@@ -183,19 +189,6 @@ func (g *FSGenerator) generateDir(ctx context.Context, parentDir string, dir Dir
 	}
 
 	return gendirs, genfiles, nil
-}
-
-type File interface {
-	Name() string
-}
-
-type Directory interface {
-	File
-	Entries() ([]File, error)
-}
-
-type WriterToFile interface {
-	WriteToFile(filename string, w io.Writer) (n int64, err error)
 }
 
 type writerToAdapter struct {

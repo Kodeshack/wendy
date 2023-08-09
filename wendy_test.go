@@ -205,7 +205,7 @@ func TestFSGenerator_Generate_NoCreateOutputDir(t *testing.T) {
 func TestFSGenerator_Generate_ModifyFile(t *testing.T) {
 	tmpdir := t.TempDir()
 
-	g := &FSGenerator{OutputDir: tmpdir, CleanDir: false} //nolint: varnamelen
+	g := &FSGenerator{OutputDir: tmpdir, CleanDir: false, ErrorOnExistingFile: true} //nolint: varnamelen
 
 	err := g.Generate(
 		PlainFile("config.json", `{"foo": "bar"}`),

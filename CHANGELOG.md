@@ -3,6 +3,12 @@
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Fixes
+- Fix modified files triggering ErrorOnExistingFile
+
+
+<a name="v0.6.1"></a>
+## [v0.6.1] - 2023-08-09
 ### Features
 - Add atomicity to file writing
 
@@ -89,7 +95,8 @@
 - Add FileFromTemplate
 
 
-[Unreleased]: https://github.com/Kodeshack/wendy/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/Kodeshack/wendy/compare/v0.6.1...HEAD
+[v0.6.1]: https://github.com/Kodeshack/wendy/compare/v0.6.0...v0.6.1
 [v0.6.0]: https://github.com/Kodeshack/wendy/compare/v0.5.0...v0.6.0
 [v0.5.0]: https://github.com/Kodeshack/wendy/compare/v0.4.0...v0.5.0
 [v0.4.0]: https://github.com/Kodeshack/wendy/compare/v0.3.0...v0.4.0

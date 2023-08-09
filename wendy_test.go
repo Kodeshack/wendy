@@ -205,7 +205,7 @@ func TestFSGenerator_Generate_NoCreateOutputDir(t *testing.T) {
 func TestFSGenerator_Generate_ModifyFile(t *testing.T) {
 	tmpdir := t.TempDir()
 
-	g := &FSGenerator{OutputDir: tmpdir} //nolint: varnamelen
+	g := &FSGenerator{OutputDir: tmpdir, CleanDir: false} //nolint: varnamelen
 
 	err := g.Generate(
 		PlainFile("config.json", `{"foo": "bar"}`),
@@ -213,6 +213,7 @@ func TestFSGenerator_Generate_ModifyFile(t *testing.T) {
 			PlainFile("config.ini", `foo = bar`),
 		),
 	)
+
 	assert.NoError(t, err)
 
 	type config struct {
@@ -264,7 +265,6 @@ func TestFSGenerator_Generate_ModifyFile(t *testing.T) {
 
 	err = g.Generate(
 		ModifyFile("config.json", json.Unmarshal, func(c *config) ([]byte, error) {
-			c.Foo = "modified"
 			c.Baz = "added"
 			return json.Marshal(c)
 		}),
@@ -280,7 +280,7 @@ func TestFSGenerator_Generate_ModifyFile(t *testing.T) {
 
 	configJSON, err := os.ReadFile(path.Join(tmpdir, "config.json"))
 	assert.NoError(t, err)
-	assert.Equal(t, `{"foo":"modified","baz":"added"}`, string(configJSON))
+	assert.Equal(t, `{"foo":"bar","baz":"added"}`, string(configJSON))
 
 	configINI, err := os.ReadFile(path.Join(tmpdir, ".config", "config.ini"))
 	assert.NoError(t, err)

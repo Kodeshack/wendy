@@ -86,6 +86,10 @@ func TestFSGenerator_Generate_ErrorOnExistingDir(t *testing.T) {
 
 	err = g.Generate(Dir("will_exist"))
 	assert.Error(t, err)
+
+	err = g.Generate(Dir("created_twice"), Dir("created_twice"))
+	assert.NoError(t, err)
+
 }
 
 func TestFSGenerator_Generate_ErrorOnExistingFile(t *testing.T) {

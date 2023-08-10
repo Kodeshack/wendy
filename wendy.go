@@ -16,7 +16,11 @@ type FSGenerator struct {
 	CleanDir            bool
 	NoCreateOutputDir   bool
 	ErrorOnExistingFile bool
+
+	createdDirs map[string]struct{}
 }
+
+var createdDir = struct{}{}
 
 type genfile struct {
 	path      string
@@ -33,6 +37,8 @@ func (g *FSGenerator) Generate(files ...File) error {
 }
 
 func (g *FSGenerator) GenerateCtx(ctx context.Context, files ...File) error {
+	g.createdDirs = map[string]struct{}{}
+
 	if g.CleanDir {
 		err := cleanDir(g.OutputDir)
 		if err != nil {
@@ -87,10 +93,17 @@ func (g *FSGenerator) GenerateCtx(ctx context.Context, files ...File) error {
 func (g *FSGenerator) generateRealDir(dir string) error {
 	err := os.Mkdir(dir, 0755)
 	if err != nil {
-		if !errors.Is(err, os.ErrExist) || g.ErrorOnExistingDir {
+		if !errors.Is(err, os.ErrExist) {
+			return err
+		}
+
+		_, created := g.createdDirs[dir]
+		if g.ErrorOnExistingDir && !created {
 			return err
 		}
 	}
+
+	g.createdDirs[dir] = createdDir
 
 	return nil
 }

@@ -1,7 +1,7 @@
 _default:
     @just --list
 
-test +flags="-failfast":
+test +flags="-failfast -race":
 	go test {{flags}} ./...
 
 test-watch *flags:

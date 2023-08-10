@@ -4,6 +4,12 @@
 ## [Unreleased]
 
 ### Fixes
+- Fix returning error on existing dir when created twice in the same run
+
+
+<a name="v0.6.2"></a>
+## [v0.6.2] - 2023-08-09
+### Fixes
 - Fix modified files triggering ErrorOnExistingFile
 
 
@@ -95,7 +101,8 @@
 - Add FileFromTemplate
 
 
-[Unreleased]: https://github.com/Kodeshack/wendy/compare/v0.6.1...HEAD
+[Unreleased]: https://github.com/Kodeshack/wendy/compare/v0.6.2...HEAD
+[v0.6.2]: https://github.com/Kodeshack/wendy/compare/v0.6.1...v0.6.2
 [v0.6.1]: https://github.com/Kodeshack/wendy/compare/v0.6.0...v0.6.1
 [v0.6.0]: https://github.com/Kodeshack/wendy/compare/v0.5.0...v0.6.0
 [v0.5.0]: https://github.com/Kodeshack/wendy/compare/v0.4.0...v0.5.0
